@@ -18,6 +18,7 @@ document.getElementById("login-button").addEventListener("click", function () {
     if (user.role === "student") {
       document.getElementById("login").style.display = "none";
       document.getElementById("student-view").style.display = "block";
+      showStudentGrade();
     } else if (user.role === "teacher") {
       document.getElementById("login").style.display = "none";
       document.getElementById("teacher-view").style.display = "block";
@@ -32,8 +33,14 @@ document
   .getElementById("student-submit")
   .addEventListener("click", function () {
     const message = document.getElementById("student-input").value;
-    localStorage.setItem("studentMessage", message);
-    localStorage.setItem("studentName", "Roberto Carlos Aguilar Jiménez");
+    const studentGrades =
+      JSON.parse(localStorage.getItem("studentGrades")) || [];
+    studentGrades.push({
+      task: `Tarea ${studentGrades.length + 1}`,
+      text: message,
+      grade: null,
+    });
+    localStorage.setItem("studentGrades", JSON.stringify(studentGrades));
     document.getElementById("student-input").value = "";
     alert("Trabajo enviado exitosamente.");
     logout();
@@ -43,25 +50,39 @@ document
   .getElementById("teacher-submit")
   .addEventListener("click", function () {
     const teacherMessage = document.getElementById("teacher-input").value;
-    const studentMessage = localStorage.getItem("studentMessage");
-    const studentName = localStorage.getItem("studentName");
-    const li = document.createElement("li");
-    li.textContent = `${studentName}: ${studentMessage} - Respuesta: ${teacherMessage}`;
-    document.getElementById("teacher-messages").appendChild(li);
+    const studentGrades =
+      JSON.parse(localStorage.getItem("studentGrades")) || [];
+    if (studentGrades.length > 0) {
+      studentGrades[studentGrades.length - 1].grade = teacherMessage;
+      localStorage.setItem("studentGrades", JSON.stringify(studentGrades));
+    }
     document.getElementById("teacher-input").value = "";
-    localStorage.setItem("studentGrade", teacherMessage);
     alert("Calificación registrada.");
     logout();
   });
 
 function loadTeacherMessages() {
-  const studentMessage = localStorage.getItem("studentMessage");
-  const studentName = localStorage.getItem("studentName");
-  if (studentMessage) {
+  const studentGrades = JSON.parse(localStorage.getItem("studentGrades")) || [];
+  const teacherMessages = document.getElementById("teacher-messages");
+  teacherMessages.innerHTML = "";
+  studentGrades.forEach((grade, index) => {
     const li = document.createElement("li");
-    li.textContent = `${studentName}: ${studentMessage}`;
-    document.getElementById("teacher-messages").appendChild(li);
-  }
+    li.textContent = `${grade.task}: ${grade.text}`;
+    teacherMessages.appendChild(li);
+  });
+}
+
+function showStudentGrade() {
+  const studentGrades = JSON.parse(localStorage.getItem("studentGrades")) || [];
+  const gradeBody = document.getElementById("student-grade-body");
+  gradeBody.innerHTML = "";
+  studentGrades.forEach((grade) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${grade.task}</td><td>${grade.text}</td><td>${
+      grade.grade || "Pendiente"
+    }</td>`;
+    gradeBody.appendChild(tr);
+  });
 }
 
 function logout() {
@@ -71,11 +92,5 @@ function logout() {
 }
 
 window.onload = function () {
-  const studentGrade = localStorage.getItem("studentGrade");
-  if (studentGrade) {
-    alert(`Tarea calificada: ${studentGrade}`);
-    document.getElementById("student-view").style.display = "block";
-    const studentInput = document.getElementById("student-input");
-    studentInput.disabled = true;
-  }
+  showStudentGrade();
 };
