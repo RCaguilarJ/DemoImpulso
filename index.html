@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Portal Demo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="login">
+    <h1>Login</h1>
+    <input type="text" id="username" placeholder="Nombre de usuario">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button id="login-button">Login</button>
+  </div>
+  <div id="student-view" style="display:none;">
+    <h1>Bienvenido, Roberto Carlos</h1>
+    <input type="text" id="student-input" placeholder="Introduce algo">
+    <button id="student-submit">Enviar</button>
+  </div>
+  <div id="teacher-view" style="display:none;">
+    <h1>Bienvenido, Maximiliano Garza</h1>
+    <ul id="teacher-messages"></ul>
+    <input type="text" id="teacher-input" placeholder="Respuesta">
+    <button id="teacher-submit">Calificar</button>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
